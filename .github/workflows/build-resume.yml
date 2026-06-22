@@ -1,1 +1,35 @@
+name: Build Resume PDF
 
+on:
+  push:
+    paths:
+      - "Resume.tex"
+      - ".github/workflows/build-resume.yml"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout files
+        uses: actions/checkout@v4
+
+      - name: Compile LaTeX resume
+        uses: xu-cheng/latex-action@v3
+        with:
+          root_file: Resume.tex
+
+      - name: Rename PDF
+        run: |
+          COMPANY="Tecsys"
+          JOB="Security_GRC_Specialist"
+          DATE=$(date +%F)
+          mkdir -p output
+          cp Resume.pdf "output/${COMPANY}_${JOB}_${DATE}.pdf"
+
+      - name: Upload final resume
+        uses: actions/upload-artifact@v4
+        with:
+          name: Final-Resume-PDF
+          path: output/*.pdf
